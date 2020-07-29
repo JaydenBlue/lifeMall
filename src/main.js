@@ -6,11 +6,14 @@ import router from './router'
 import store from './store'
 import 'vant/lib/index.css';
 import VueCookies from 'vue-cookies'
+import api from '@/api/api.js'
 import VueI18n from 'vue-i18n'
 
 Vue.use(VueCookies).use(ElementUI)
 Vue.config.productionTip = false
 Vue.use(VueI18n)
+
+Vue.prototype.$api = api
 
 const i18n = new VueI18n({
   locale: '1',    // 语言标识

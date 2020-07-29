@@ -18,3 +18,4 @@ export const mallGoodsHotGoods = p => post('mall/goods/hotGoods', p);
 
 // 促销活动
 export const mallGoodsPromotionsActivity = p => post('mall/goods/promotionsActivity', p);
+

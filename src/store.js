@@ -17,7 +17,11 @@ export default new Vuex.Store({
     //分享地址
     tgBaseUrl : "",
     //gameurl
-    gameUrlList : ""
+    gameUrlList : "",
+    // 是否打开登录弹窗
+    isToLogin: false,
+    // 是否打开注册弹窗
+    isToReg: false,
   },
   mutations: {
     isLoginChange(state,bool){

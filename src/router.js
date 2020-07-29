@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
 import Clause from './views/clause.vue'
 
 
@@ -12,8 +11,23 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: Home,
+      component: resolve => require(["@/views/layout.vue"], resolve),
+      children: [
+        {
+          path: "/",
+          redirect: '/home'
+        },
+        {
+          path: '/home',
+          name: '/home',
+          component: resolve => require(["@/views/home.vue"], resolve),
+          meta: {
+            icon: '',
+            keepAlive: false,
+            title: ''
+          }
+        },
+      ]
     },
     {
       path: '/clause',
