@@ -2,26 +2,26 @@
   <div class="login">
     <div class="main">
       <div class="felxE">
-        <div class="close">
+        <div class="close" @click="close">
           <i class="iconfont icon-guanbi2"></i>
         </div>
       </div>
       <div class="flex title">
-        <div class="item acitve">登录</div>
+        <div class="item acitve" v-text="$t('login.l1')">登錄</div>
       </div>
       <div class="flexC form">
         <div class="form_item">
           <i class="iconfont icon-xingmingyonghumingnichengcopy"></i>
-          <input type="text" placeholder="请输入用户名" />
+          <input type="text" :placeholder="$t('login.l2')" />
         </div>
         <div class="form_item">
           <i class="iconfont icon-mima"></i>
-          <input type="text" placeholder="请输入密码" />
+          <input type="text" :placeholder="$t('login.l3')" />
         </div>
-        <div class="form_item btn">登录</div>
+        <div class="form_item btn" v-text="$t('login.l4')">登錄</div>
         <div class="flex login2">
-          <div class="txt">忘记密码</div>
-          <div class="txt">没有账号？立即注册</div>
+          <div class="txt" @click="forgetP" v-text="$t('login.l5')">忘記密碼</div>
+          <div class="txt" v-text="$t('login.l6')" @click="reg">沒有賬號？立即註冊</div>
         </div>
       </div>
     </div>
@@ -41,11 +41,26 @@ export default {
     };
   },
   created() {},
-  methods: {},
+  methods: {
+    close() {
+      this.$store.commit("ISTOLOGIN", false);
+    },
+    reg() {
+      this.$store.commit("ISTOREG", true);
+    },
+    forgetP() {
+      if (document.getElementsByClassName("el-notification").length === 0) {
+        this.$notify.info({
+          title: this.$t("login.l7"),
+          message: this.$t("login.l8"),
+        });
+      }
+    },
+  },
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .login {
   width: 100%;
   height: 100vh;
@@ -55,10 +70,10 @@ export default {
   left: 0;
   bottom: 0;
   background-color: rgba($color: #000000, $alpha: 0.3);
-  z-index: 3999;
+  z-index: 999;
   .main {
     width: 500px;
-    z-index: 4000;
+    z-index: 1000;
     text-size-adjust: 100%;
     font-size: 14px;
     line-height: 1.5;
@@ -78,11 +93,11 @@ export default {
     transform: translate(-50%, -50%);
     padding: 20px 30px 40px;
     box-sizing: border-box;
-    .close{
-        cursor: pointer;
+    .close {
+      cursor: pointer;
     }
-    .close:hover{
-        color: #333;
+    .close:hover {
+      color: #333;
     }
     .title {
       justify-content: space-around;

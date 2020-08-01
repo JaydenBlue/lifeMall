@@ -2,17 +2,21 @@
   <div class="reg">
     <div class="main">
       <div class="felxE">
-        <div class="close">
+        <div class="close" @click="close">
           <i class="iconfont icon-guanbi2"></i>
         </div>
       </div>
       <div class="flex title">
         <div
-          v-for="(item, index) in titleList"
-          :key="index"
-          @click="changeType(index)"
-          :class="activeIndex == index?'item acitve':'item'"
-        >{{item}}</div>
+          @click="changeType(0)"
+          :class="activeIndex == 0?'item acitve':'item'"
+          v-text="$t('reg.r1')"
+        >手機號註冊</div>
+        <div
+          @click="changeType(1)"
+          :class="activeIndex == 1?'item acitve':'item'"
+          v-text="$t('reg.r2')"
+        >郵箱註冊</div>
       </div>
       <div class="flexC form" v-if="activeIndex == 0">
         <div class="form_item form_item1">
@@ -21,80 +25,80 @@
             <div class="code">+86</div>
           </div>
           <div class="input">
-            <input type="text" placeholder="请输入手机号" />
+            <input type="text" :placeholder="$t('reg.r3')" />
           </div>
         </div>
         <div class="form_item form_item1">
           <div class="input">
             <i class="iconfont icon-yanzhengma1"></i>
-            <input type="text" placeholder="请输入图形验证码" />
+            <input type="text" :placeholder="$t('reg.r4')" />
           </div>
           <div class="flexC form_btn" @click="getPicCode">
-            <img :src="imgurl" alt="图形验证码" />
+            <img :src="imgurl" :alt="$t('reg.r14')" />
           </div>
         </div>
         <div class="form_item form_item1">
           <div class="input">
             <i class="iconfont icon-duanxinyanzhengma"></i>
-            <input type="text" placeholder="请输入验证码" />
+            <input type="text" :placeholder="$t('reg.r5')" />
           </div>
-          <div class="flexC form_btn">获取验证码</div>
+          <div class="flexC form_btn" v-text="$t('reg.r6')">獲取驗證碼</div>
         </div>
         <div class="form_item">
           <i class="iconfont icon-mima"></i>
-          <input type="text" placeholder="请设置登录密码" />
+          <input type="text" :placeholder="$t('reg.r7')" />
         </div>
         <div class="form_item">
           <i class="iconfont icon-mima"></i>
-          <input type="text" placeholder="请确认登录密码" />
+          <input type="text" :placeholder="$t('reg.r8')" />
         </div>
         <div class="form_item">
           <i class="iconfont icon-yaoqingma"></i>
-          <input type="text" placeholder="请输入推荐码(选填)" />
+          <input type="text" :placeholder="$t('reg.r9')" />
         </div>
-        <div class="form_item btn">注册</div>
-        <div class="felxE login">
-          已有账号,
-          <span>直接登录</span>
+        <div class="form_item btn" v-text="$t('reg.r10')">註冊</div>
+        <div class="felxE login" @click="login">
+          <span v-text="$t('reg.r11')">已有賬號,</span>
+          <span class="color" v-text="$t('reg.r12')">直接登錄</span>
         </div>
       </div>
       <div class="flexC form" v-if="activeIndex == 1">
         <div class="form_item form_item1">
           <i class="iconfont icon-youxiang"></i>
-          <input type="text" placeholder="请输入邮箱" />
+          <input type="text" :placeholder="$t('reg.r13')" />
         </div>
         <div class="form_item form_item1">
           <div class="input">
             <i class="iconfont icon-yanzhengma1"></i>
-            <input type="text" placeholder="请输入图形验证码" />
+            <input type="text" :placeholder="$t('reg.r4')" />
           </div>
           <div class="flexC form_btn" @click="getPicCode">
-            <img :src="imgurl" alt="图形验证码" />
+            <img :src="imgurl" :alt="$t('reg.r14')" />
           </div>
         </div>
         <div class="form_item form_item1">
           <div class="input">
             <i class="iconfont icon-duanxinyanzhengma"></i>
-            <input type="text" placeholder="请输入验证码" />
+            <input type="text" :placeholder="$t('reg.r5')" />
           </div>
-          <div class="flexC form_btn">获取验证码</div>
+          <div class="flexC form_btn" v-text="$t('reg.r6')">獲取驗證碼</div>
         </div>
         <div class="form_item">
           <i class="iconfont icon-mima"></i>
-          <input type="text" placeholder="请设置登录密码" />
+          <input type="text" :placeholder="$t('reg.r7')" />
         </div>
         <div class="form_item">
           <i class="iconfont icon-mima"></i>
-          <input type="text" placeholder="请确认登录密码" />
+          <input type="text" :placeholder="$t('reg.r8')" />
         </div>
         <div class="form_item">
           <i class="iconfont icon-yaoqingma"></i>
-          <input type="text" placeholder="请输入推荐码(选填)" />
+          <input type="text" :placeholder="$t('reg.r9')" />
         </div>
-        <div class="form_item btn">注册</div>
-        <div class="felxE login">
-          已有账号,
-          <span>直接登录</span>
+        <div class="form_item btn" v-text="$t('reg.r10')">註冊</div>
+        <div class="felxE login" @click="login">
+          <span v-text="$t('reg.r11')">已有賬號,</span>
+          <span class="color" v-text="$t('reg.r12')">直接登錄</span>
         </div>
       </div>
     </div>
@@ -108,7 +112,6 @@ export default {
     return {
       imgurl: "",
       activeIndex: 0,
-      titleList: ["手机号注册", "邮箱注册"],
       form: {
         phone: "",
         picCode: "",
@@ -133,11 +136,17 @@ export default {
       this.activeIndex = index;
       this.getPicCode();
     },
+    close() {
+      this.$store.commit("ISTOREG", false);
+    },
+    login() {
+      this.$store.commit("ISTOLOGIN", true);
+    },
   },
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .reg {
   width: 100%;
   height: 100vh;
@@ -147,10 +156,10 @@ export default {
   left: 0;
   bottom: 0;
   background-color: rgba($color: #000000, $alpha: 0.3);
-  z-index: 3999;
+  z-index: 999;
   .main {
     width: 500px;
-    z-index: 4000;
+    z-index: 1000;
     text-size-adjust: 100%;
     font-size: 14px;
     line-height: 1.5;
@@ -291,11 +300,11 @@ export default {
         width: 100%;
         text-align: right;
         padding-right: 10px;
-        span {
+        .color {
           color: #da9923;
           cursor: pointer;
         }
-        span:hover {
+        .color:hover {
           color: #ca932f;
         }
       }

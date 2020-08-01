@@ -4,12 +4,14 @@
     <HeaderSearch></HeaderSearch>
     <router-view></router-view>
     <Bottom></Bottom>
-    <Login/>
+    <Reg  v-if="isToReg" />
+    <Login v-if="isToLogin" />
   </div>
 </template>
 
 <script>
 import Vue from "vue";
+import { mapGetters } from "vuex";
 import Header from "@/components/module/header.vue";
 import Bottom from "@/components/module/bottom.vue";
 import HeaderSearch from "@/components/module/headerSearch.vue";
@@ -23,8 +25,14 @@ export default {
     Bottom,
     HeaderSearch,
     Reg,
-    Login
+    Login,
   },
+  computed: {
+    ...mapGetters(["isToLogin", "isToReg"]),
+  },
+  mounted(){
+    console.log(this.isToLogin)
+  }
 };
 </script>
 
