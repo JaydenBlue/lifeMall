@@ -28,6 +28,36 @@ export default new Router({
           }
         },
         {
+          path: 'payment',
+          name: 'payment',
+          component: resolve => require(["@/views/payment.vue"], resolve),
+          meta: {
+            icon: '',
+            keepAlive: false,
+            title: '支付'
+          }
+        },
+        {
+          path: 'userpay',
+          name: 'userpay',
+          component: resolve => require(["@/views/userpay.vue"], resolve),
+          meta: {
+            icon: '',
+            keepAlive: false,
+            title: '微信支付'
+          }
+        },
+        {
+          path: 'cart',
+          name: 'cart',
+          component: resolve => require(["@/views/cart.vue"], resolve),
+          meta: {
+            icon: '',
+            keepAlive: false,
+            title: '购物车'
+          }
+        },
+        {
           path: 'coupon',
           name: 'coupon',
           component: resolve => require(["@/views/coupon.vue"], resolve),
@@ -54,9 +84,20 @@ export default new Router({
           meta: {
             icon: '',
             keepAlive: false,
-            title: ''
+            title: '商品列表'
           }
         },
+        {
+          path: 'gotoorder',
+          name: 'gotoorder',
+          component: resolve => require(["@/views/gotoorder.vue"], resolve),
+          meta: {
+            icon: '',
+            keepAlive: false,
+            title: '确认订单'
+          }
+        },
+
         {
           path: 'personal',
           name: 'personal',
@@ -121,6 +162,7 @@ export default new Router({
                 title: '我的优惠券'
               }
             },
+
           ]
         },
       ]

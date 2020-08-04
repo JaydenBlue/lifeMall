@@ -5,17 +5,22 @@
         <span class="default_path">
           <a href>首页</a>
           <i>></i>
-          <a>全部搜索结果</a>
+          <a href="javascript:void(0)" @click="searchAll">全部搜索结果</a>
         </span>
-        <a class="qwords">摄像机</a>
+        <a class="qwords">{{name}}</a>
       </div>
     </div>
     <div class="filter-box">
       <div class="filter js-cates">
         <div class="hint">分类:</div>
         <div class="option_box unspread">
-          <a href="javascript:void(0)">手机数码/电脑办公</a>
-          <a href="javascript:void(0)">家居家纺/餐厨/家具/家装/宠物园艺</a>
+          <a
+            href="javascript:void(0)"
+            @click="changeType(item, index)"
+            :class="activeIndex == index?'acitves':''"
+            v-for="(item, index) in typeList"
+            :key="index"
+          >{{item.name}}</a>
         </div>
       </div>
       <div class="filter js-cates">
@@ -36,22 +41,23 @@
       <div class="listwrap">
         <div class="list-container">
           <div class="list">
-            <div class="list-item">
+            <div class="list-item" v-for="(item,index) in shopList" :key="index">
               <dl class="desc">
-                <dt class="pic">
+                <dt class="pic" @click="goDetail">
                   <a href="javascript:void(0)">
-                    <img src="https://p2.ssl.qhmsg.com/dr/360_360_/t01f3855a0f8769d068.webp" alt />
+                    <img :src="item.thumbnail_urls" alt />
                   </a>
                 </dt>
                 <dd class="cont">
                   <a href>
-                    <span class="title">360 智能摄像机小水滴AI版D903</span>
+                    <span class="title">{{item.name}}</span>
                     <span class="price">
-                      <span>￥</span>149
+                      <span>￥</span>
+                      {{item.price}}
                     </span>
                   </a>
                 </dd>
-                <dd class="addbtns">
+                <dd class="addbtns" @click="addCart">
                   <a href="javascript:void(0)" class="add-cart">加入购物车</a>
                 </dd>
               </dl>
@@ -65,8 +71,81 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: "classification",
+  data() {
+    return {
+      typeList: [],
+      shopList: [],
+      activeIndex: 0,
+      name: "",
+      filterForm: {
+        brand: "",
+        end_price: 0,
+        name: "",
+        pageNum: 1,
+        pageSize: 20,
+        sort: 0,
+        start_price: 0,
+        status: 1,
+        type: 1,
+      },
+    };
+  },
+  created() {
+    console.log(this.$route.query);
+    if (this.$route.query.word) {
+      this.filterForm.name = this.$route.query.word;
+      this.name = this.$route.query.word;
+    }
+    this.getInit();
+    this.getShops();
+  },
+  computed: {
+    ...mapGetters(["userInfo"]),
+  },
+  methods: {
+    getInit() {
+      this.$api.getClassify().then((res) => {
+        console.log(res);
+        this.typeList = res.data.data;
+      });
+    },
+    getShops() {
+      this.$api.getShopList(this.filterForm).then((res) => {
+        console.log(res);
+        this.shopList = res.data.data.list;
+      });
+    },
+    searchAll() {
+      this.name = "全部";
+      this.filterForm.name = ''
+      this.getShops()
+    },
+    // 切换分类
+    changeType(item, index) {
+      this.activeIndex = index;
+      this.filterForm.type = item.id;
+      this.getShops();
+    },
+    addCart() {
+      console.log(this.userInfo);
+      if (this.userInfo) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: "添加成功",
+          });
+        }
+      } else {
+        this.$store.commit("ISTOLOGIN", true);
+      }
+    },
+    goDetail() {
+      this.$router.push("/shop/item");
+    },
+  },
 };
 </script>
 
@@ -131,6 +210,9 @@ export default {
     .unspread {
       height: 48px !important;
       overflow: hidden !important;
+      .acitves {
+        color: #dcbc82;
+      }
     }
     .option_box {
       border-bottom: 1px solid #e8e8e8;
@@ -143,7 +225,7 @@ export default {
       width: 1175px;
     }
     .filter {
-    //   border-bottom: 1px solid #e8e8e8;
+      //   border-bottom: 1px solid #e8e8e8;
       line-height: 48px;
       margin: 0 auto;
       width: 1240px;
@@ -178,7 +260,7 @@ export default {
       align-items: center;
     }
     .js-cates:last-child {
-      border-bottom: 0!important;
+      border-bottom: 0 !important;
     }
   }
   .list-box {

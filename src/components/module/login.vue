@@ -12,13 +12,13 @@
       <div class="flexC form">
         <div class="form_item">
           <i class="iconfont icon-xingmingyonghumingnichengcopy"></i>
-          <input type="text" :placeholder="$t('login.l2')" />
+          <input type="text" v-model="form.u_name" :placeholder="$t('login.l2')" />
         </div>
         <div class="form_item">
           <i class="iconfont icon-mima"></i>
-          <input type="text" :placeholder="$t('login.l3')" />
+          <input type="password" v-model="form.u_pwd" :placeholder="$t('login.l3')" />
         </div>
-        <div class="form_item btn" v-text="$t('login.l4')">登錄</div>
+        <div class="form_item btn" @click="login" v-text="$t('login.l4')">登錄</div>
         <div class="flex login2">
           <div class="txt" @click="forgetP" v-text="$t('login.l5')">忘記密碼</div>
           <div class="txt" v-text="$t('login.l6')" @click="reg">沒有賬號？立即註冊</div>
@@ -35,13 +35,44 @@ export default {
     return {
       imgurl: "",
       form: {
-        phone: "",
-        password: "",
+        mall: "mall",
+        u_name: "",
+        u_pwd: "",
       },
     };
   },
   created() {},
   methods: {
+    // 登录
+    login() {
+      if (!this.form.u_name) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: this.$t("login.l2"),
+          });
+        }
+      } else if (!this.form.u_pwd) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: this.$t("login.l3"),
+          });
+        }
+      } else {
+        this.$api.pwdLogin(this.form).then((res) => {
+          console.log(res);
+          if (document.getElementsByClassName("el-notification").length === 0) {
+            this.$notify.info({
+              title: this.$t("login.l7"),
+              message: "登录成功",
+            });
+          }
+          this.$store.commit("LOGININFO", res);
+          this.$store.commit("ISTOLOGIN", false);
+        });
+      }
+    },
     close() {
       this.$store.commit("ISTOLOGIN", false);
     },

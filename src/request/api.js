@@ -11,7 +11,7 @@ export const mallHomeBanner = p => get('news/get/rotationChart/10/1', p);
 export const mallHomeGoodsTypes = p => get('mall/home/goodsTypes', p);
 
 // 新闻
-export const newsNewses = p => get('news/newses/10/1/8/'+new Date().getTime(), p);
+export const newsNewses = p => get('news/newses/10/1/8/' + new Date().getTime(), p);
 
 // 热门推荐
 export const mallGoodsHotGoods = p => post('mall/goods/hotGoods', p);

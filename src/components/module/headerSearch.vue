@@ -9,10 +9,10 @@
       </div>
       <div class="right">
         <div class="serachBox">
-          <input class="serach" type="text" placeholder="iPhone 11 Pro Max" />
+          <input class="serach" v-model="searchName" type="text" placeholder="iPhone 11 Pro Max" />
           <img class="serchImg" src="@/assets/img/serach.png" alt />
           <div class="searchSuggest">
-            <span class="lis" v-text="$t('home.h2')" @click="jumpClass()">笔记本</span>
+            <span class="lis" v-text="$t('home.h2')" @click="jumpClass($t('home.h2'))">笔记本</span>
             <span class="lis" v-text="$t('home.h3')">摄像机</span>
             <span class="lis" v-text="$t('home.h4')">路由器</span>
             <span class="lis" v-text="$t('home.h5')">记录仪</span>
@@ -35,7 +35,9 @@ export default {
   name: "headerSearch",
   components: {},
   data() {
-    return {};
+    return {
+      searchName: "",
+    };
   },
   created() {},
   mounted() {},
@@ -43,8 +45,9 @@ export default {
     jumpCoupon() {
       this.$router.push("/coupon");
     },
-    jumpClass() {
-      this.$router.push("/classification")
+    jumpClass(word) {
+      this.searchName = word;
+      this.$router.push("/classification?word=" + this.searchName);
     },
     goIndex() {
       this.$router.push("/");

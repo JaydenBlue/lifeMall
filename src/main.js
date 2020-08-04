@@ -8,6 +8,7 @@ import 'vant/lib/index.css';
 import VueCookies from 'vue-cookies'
 import api from '@/api/api.js'
 import VueI18n from 'vue-i18n'
+import { filters } from '@/utils/filter'
 
 Vue.use(VueCookies).use(ElementUI)
 Vue.config.productionTip = false
@@ -24,6 +25,10 @@ const i18n = new VueI18n({
   }
 })
 
+Object.keys(filters).forEach(key => {
+  Vue.filter(key, filters[key])
+});
+
 
 new Vue({
   router,
@@ -31,3 +36,5 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
+
+

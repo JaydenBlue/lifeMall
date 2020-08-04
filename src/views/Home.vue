@@ -3,7 +3,7 @@
     <div class="bannerBox">
       <el-carousel class="bannerList">
         <el-carousel-item class="bannerli" v-for="(el,i) in bannerList" :key="i">
-          <img :src="el.newsBannerDetail.d_img_url" alt />
+          <img v-if="el.newsBannerDetail" :src="el.newsBannerDetail.d_img_url" alt />
         </el-carousel-item>
       </el-carousel>
       <div class="marquee-wrap">
@@ -16,7 +16,7 @@
       <div class="content">
         <div class="fltitle" v-text="$t('home.h8')">热门推荐</div>
         <div class="suggests">
-          <div class="lis" v-for="(el,i) in hotGoods" :key="i">
+          <div class="lis" @click="goDetail(el)" v-for="(el,i) in hotGoods" :key="i">
             <div class="mark">
               <span v-show="el.hot == 1" v-text="$t('home.h9')">爆款</span>
             </div>
@@ -34,7 +34,7 @@
         </div>
         <div class="fltitle" v-text="$t('home.h10')">促销产品</div>
         <div class="suggests">
-          <div class="lis" v-for="(el,i) in PromotiontGoods" :key="i">
+          <div class="lis" @click="goDetail(el)" v-for="(el,i) in PromotiontGoods" :key="i">
             <div class="mark">
               <span v-show="el.hot == 1" v-text="$t('home.h9')">爆款</span>
             </div>
@@ -59,14 +59,6 @@
 import Vue from "vue";
 import Bus from "@/components/bus.js";
 
-import {
-  mallHomeBanner,
-  mallHomeGoodsTypes,
-  newsNewses,
-  mallGoodsHotGoods,
-  mallGoodsPromotionsActivity,
-} from "@/request/api";
-
 export default {
   name: "homes",
   data() {
@@ -90,6 +82,9 @@ export default {
   mounted() {},
   watch: {},
   methods: {
+    goDetail(item) {
+      this.$router.push("/shop/item?goodId=" + item.id);
+    },
     scrollAnimate() {
       this.animateUp = true;
       setTimeout(() => {
@@ -100,43 +95,47 @@ export default {
     },
     init() {
       this.cache();
-      mallHomeBanner().then((res) => {
-        this.bannerList = res.data;
+      this.$api.mallHomeBanner().then((res) => {
+        this.bannerList = res.data.data;
 
-        this.$cookies.set("HomeBannerList", res.data);
+        this.$cookies.set("HomeBannerList", res.data.data);
       });
-      newsNewses().then((res) => {
+      this.$api.newsNewses().then((res) => {
         clearInterval(this.timer);
-        let arr1 = res.data.list;
+        let arr1 = res.data.data.list;
         this.newListData = [];
         for (let i = 0; i < arr1.length; i++) {
           this.newListData.push(arr1[i].a_title);
         }
         this.timer = setInterval(this.scrollAnimate, 1500);
 
-        this.$cookies.set("HomeNewListData", res.data.list);
+        this.$cookies.set("HomeNewListData", res.data.data.list);
       });
       // mallHomeGoodsTypes().then((res)=>{
       //   console.log(res);
       // })
       //热门推荐
-      mallGoodsHotGoods({
-        pageNum: 1,
-        pageSize: 8,
-      }).then((res) => {
-        this.hotGoods = res.data.list;
+      this.$api
+        .mallGoodsHotGoods({
+          pageNum: 1,
+          pageSize: 8,
+        })
+        .then((res) => {
+          this.hotGoods = res.data.data.list;
 
-        this.$cookies.set("HomehotGoods", res.data);
-      });
+          this.$cookies.set("HomehotGoods", res.data.data);
+        });
       //促销活动
-      mallGoodsPromotionsActivity({
-        pageNum: 1,
-        pageSize: 16,
-      }).then((res) => {
-        this.PromotiontGoods = res.data.list;
+      this.$api
+        .mallGoodsPromotionsActivity({
+          pageNum: 1,
+          pageSize: 16,
+        })
+        .then((res) => {
+          this.PromotiontGoods = res.data.data.list;
 
-        this.$cookies.set("HomePromotiontGoods", res.data.list);
-      });
+          this.$cookies.set("HomePromotiontGoods", res.data.data.list);
+        });
     },
     //检查是否有数据缓存
     cache() {

@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import api from './api/api.js'
 
 Vue.use(Vuex)
 
@@ -12,6 +13,7 @@ export default new Vuex.Store({
     isLogin: false,
     //登录返回信息
     loginInfo: {},
+    userInfo: {},
     //token
     token: '',
     //分享地址
@@ -29,14 +31,26 @@ export default new Vuex.Store({
     },
     isToReg(state) {
       return state.isToReg
-    }
+    },
+    loginInfo(state) {
+      return state.loginInfo
+    },
+    userInfo(state) {
+      return state.userInfo
+    },
   },
   mutations: {
     isLoginChange(state, bool) {
       state.isLogin = bool
     },
-    loginInfoChange(state, obj) {
+    LOGININFO(state, obj) {
+      api.getUserInfo().then(res => {
+        console.log(res)
+      })
       state.loginInfo = obj
+    },
+    USERINFO(state, obj) {
+      state.userInfo = obj
     },
     tokenChange(state, token) {
       state.token = token
@@ -68,6 +82,12 @@ export default new Vuex.Store({
     },
     ISTOREGFLAG({ commit }, data) {
       commit('ISTOREG', data);
+    },
+    LOGININFOFLAG({ commit }, data) {
+      commit('LOGININFO', data);
+    },
+    USERINFOFLAG({ commit }, data) {
+      commit('USERINFO', data);
     },
   }
 })
