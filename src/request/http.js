@@ -3,24 +3,27 @@
  */
 import axios from 'axios';
 import QS from 'qs';
-import store from '../store'
-import { EFAULT } from 'constants';
-import Vue from 'vue'
+import store from '@/store/store.js'
 import { Message } from 'element-ui';
-import Bus from '@/components/bus.js'
 import VueCookies from 'vue-cookies'
 import router from '../router'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 console.log(store)
 
-axios.defaults.baseURL = "https://gm.merrilylife.com/"
+
+axios.defaults.baseURL = "https://gm.merrilylife.com/";
 
 // 请求超时时间
 axios.defaults.timeout = 60000;
 
 // post请求头
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8;application/json';
+// axios.defaults.headers.post['cookie'] = 'JSESSIONID='+store.state.token;
+// get请求头
+// axios.defaults.headers.get['cookie'] = 'JSESSIONID='+store.state.token;
+axios.defaults.withCredentials = true
+// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
 // axios.defaults.headers.post['token'] = store.state.token;
 // get请求头
 // axios.defaults.headers.get['token'] = store.state.token;
@@ -55,10 +58,17 @@ function tryHideFullScreenLoading() {
 axios.interceptors.request.use(
     config => {
         showFullScreenLoading()
+        console.log(config)
+        // if (config.isForm) {
+        //     config.headers = {
+        //         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8;application/json'
+        //     }
+        // }
         // 每次发送请求之前判断是否存在token，如果存在，则统一在http请求的header都加上token，不用每次请求都手动添加了
         // 即使本地存在token，也有可能token是过期的，所以在响应拦截器中要对返回状态进行判断
-        const token = store.state.token;
-        token && (config.headers.token = token);
+        // const token = store.state.token;
+        // token && (config.headers.token = token);
+        // config.headers.token = 'JSESSIONID='+'admin';
         return config;
     },
     error => {
@@ -76,16 +86,16 @@ axios.interceptors.response.use(
             if (response.data.status === -1 && response.data.msg == 'NOT_LOGIN') {
                 store.commit('isLoginChange', false);
                 store.commit('tokenChange', "");
-                VueCookies.delete('token')
+                // VueCookies.delete('token')
                 // router.push({path : '/login'})
                 router.push({ path: '/' })
                 return Promise.reject(response);
             }
             if (response.data.status == -1) {
-                Message({
-                    message: i18n.t('msgError.' + response.data.msg + ''),
-                    type: 'warning'
-                });
+                // Message({
+                //     message: i18n.t('msgError.' + response.data.msg + ''),
+                //     type: 'warning'
+                // });
                 return Promise.reject(response);
             }
             return Promise.resolve(response);
@@ -120,12 +130,13 @@ axios.interceptors.response.use(
  * @returns {Promise}
  */
 // qs.stringify(params)
-export function Api(urls, methods, params = {}) {
+export function Api(urls, methods, params = {}, isForm= false) {
     return new Promise((resolve, reject) => {
         axios({
             method: methods,
             url: urls,
             data: params,
+            isForm:isForm
         })
             .then(res => {
                 resolve(res);

@@ -39,8 +39,20 @@
           </div>
         </div>
         <div class="right">
-          <div class="tls" @click="login" v-text="$t('header.h3')">登录</div>
-          <div class="tls" @click="reg" v-text="$t('header.h4')">注册</div>
+          <div v-if="!userInfoMsg.m_name" class="tls" @click="login" v-text="$t('header.h3')">登录</div>
+          <div v-else class="loginBox">
+            <a href="javascript: void(0)">{{userInfoMsg.m_name}}</a>
+            <div class="modelBox">
+              <a class="item" href="javascript: void(0)">{{userInfoMsg.m_name}}</a>
+              <router-link class="item" to="/personal/personalCenter">我的会员</router-link>
+              <router-link class="item" to="/personal/order">我的订单</router-link>
+              <router-link class="item" to="/personal/myCoupon">我的优惠券</router-link>
+              <router-link class="item" to="/personal/wallet">我的钱包</router-link>
+              <router-link class="item" to="/personal/address">收货地址</router-link>
+              <a href="javascript: void(0)" @click="loginOut" class="item">退出登录</a>
+            </div>
+          </div>
+          <div v-if="!userInfoMsg.m_name" class="tls" @click="reg" v-text="$t('header.h4')">注册</div>
           <div class="tls hiddens">
             {{$t('header.h5')}}
             <div class="hover">
@@ -67,18 +79,52 @@
 <script>
 import Vue from "vue";
 import Bus from "@/components/bus.js";
-
+import { mapGetters } from "vuex";
+import Cookie from "js-cookie";
 import { apiPageIndex } from "@/request/api";
 
 export default {
   name: "headers",
   components: {},
   data() {
-    return {};
+    return {
+      userInfoMsg: {
+        data: 1,
+      },
+    };
+  },
+  computed: {
+    ...mapGetters(["userInfo"]),
+  },
+  watch: {
+    userInfo: function (val, oldVal) {
+      console.log(val)
+      this.userInfoMsg = val;
+    },
   },
   created() {},
-  mounted() {},
+  mounted() {
+    this.userInfoMsg = this.userInfo;
+  },
   methods: {
+    loginOut() {
+      this.$api
+        .memberLogout()
+        .then((res) => {
+          console.log(res)
+          if (res.data.status == 1) {
+            this.$store.commit("isLoginChange", false);
+            this.$store.commit("tokenChange", "");
+            this.$store.commit("USERINFO", "");
+            console.log(res)
+            this.userInfoMsg = {}
+            Cookie.remove("auth");
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        });
+    },
     addfavorite() {
       var ctrl =
         navigator.userAgent.toLowerCase().indexOf("mac") != -1
@@ -154,67 +200,111 @@ export default {
     display: flex;
     font-size: 12px;
     line-height: 40px;
-    .tls {
-      margin-left: 30px;
-      cursor: pointer;
-      padding: 0 5px;
-      i {
-        font-size: 25px;
-        vertical-align: -5px;
-      }
-    }
-    .tls:nth-child(1) {
-      margin-left: 0;
-    }
-    .hiddens {
+    .loginBox {
       position: relative;
-      height: 35px;
-      margin-top: 5px;
-      line-height: 30px;
-      border-radius: 5px 5px 0 0;
-      .hover {
-        display: flex;
-        position: absolute;
-        width: 230px;
-        min-height: 120px;
-        background: #fff;
-        top: 35px;
-        right: 0;
-        padding: 10px;
+      .names {
+        font-weight: 700;
+        overflow: hidden;
+        text-overflow: ellipsis;
         box-sizing: border-box;
-        display: none;
-        box-shadow: 1px 3px 5px #dbd7d7;
-        img {
-          display: block;
-          width: 100px;
-          height: 100px;
-          margin-right: 10px;
-        }
-        .downjs {
-          h5 {
-            height: 33px;
-            margin: 0;
-            line-height: 33px;
-            color: #333333;
-          }
-        }
+        height: 30px;
+        line-height: 20px;
+        padding: 5px 0;
+        text-align: center;
+        color: #666;
+        outline: none;
+        text-decoration: none;
       }
-      .shopcat {
-        width: 300px;
-        .noshop {
-          width: 100%;
-          padding-top: 32px;
-          font-size: 12px;
+
+      .modelBox {
+        background: #fff;
+        border-radius: 4px;
+        box-shadow: 0 0 8px -4px rgba(0, 0, 0, 0.5);
+        display: none;
+        left: 50%;
+        margin-left: -50px;
+        text-align: center;
+        padding: 0 10px;
+        position: absolute;
+        top: 5px;
+        // width: 100px;
+        z-index: 1;
+        a {
+          display: block;
+        }
+        .item {
+          box-sizing: border-box;
+          height: 30px;
+          line-height: 20px;
+          padding: 5px 0;
           text-align: center;
         }
       }
     }
-    .hiddens:hover {
+    .loginBox:hover .modelBox {
+      display: block;
+    }
+  }
+  .tls {
+    margin-left: 30px;
+    cursor: pointer;
+    padding: 0 5px;
+    i {
+      font-size: 25px;
+      vertical-align: -5px;
+    }
+  }
+  .tls:nth-child(1) {
+    margin-left: 0;
+  }
+  .hiddens {
+    position: relative;
+    height: 35px;
+    margin-top: 5px;
+    line-height: 30px;
+    border-radius: 5px 5px 0 0;
+    .hover {
+      display: flex;
+      position: absolute;
+      width: 230px;
+      min-height: 120px;
       background: #fff;
-      color: #333333;
-      .hover {
-        display: flex;
+      top: 35px;
+      right: 0;
+      padding: 10px;
+      box-sizing: border-box;
+      display: none;
+      box-shadow: 1px 3px 5px #dbd7d7;
+      img {
+        display: block;
+        width: 100px;
+        height: 100px;
+        margin-right: 10px;
       }
+      .downjs {
+        h5 {
+          height: 33px;
+          margin: 0;
+          line-height: 33px;
+          color: #333333;
+        }
+      }
+    }
+    .shopcat {
+      width: 300px;
+      .noshop {
+        width: 100%;
+        padding-top: 32px;
+        font-size: 12px;
+        text-align: center;
+      }
+    }
+  }
+  .hiddens:hover {
+    background: #fff;
+    color: #333333;
+    .hover {
+      display: flex;
     }
   }
 }

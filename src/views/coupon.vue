@@ -6,7 +6,7 @@
       </div>
       <div class="couponListWrap">
         <div class="couponList">
-          <div class="couponItem">
+          <div class="couponItem" v-for="(item, index) in couponList" :key="index">
             <div class="c-item-wrapper">
               <i class="c-item-bg"></i>
               <i class="c-item-content-bg"></i>
@@ -15,18 +15,19 @@
                 <div class="center-body">
                   <div class="c-item-num c-item-num-5">
                     <i>￥</i>
-                    <strong>10.00</strong>
+                    <strong>{{item.discount}}</strong>
                   </div>
                   <div class="c-item-desc">满99.00可用</div>
                 </div>
               </div>
               <div class="c-item-content">
-                <p class="c-item-intro" title="限时购商品与个别商品除外">
-                  <span class="c-item-tag c-item-tag-vip">黑金专享</span>限时购商品与个别商品除外
+                <p class="c-item-intro" :title="item.name">
+                  <span class="c-item-tag c-item-tag-vip">黑金专享</span>
+                  {{item.name}}
                 </p>
-                <p class="c-item-time">2020.7.1 00:00-2020.7.31 23:55</p>
+                <p class="c-item-time">{{item.start_time}}-{{item.end_time}}</p>
                 <a href="javascript:void(0)" class="c-item-oper js-coupon-get">
-                  <span class="c-item-btn" @click="receive">领取</span>
+                  <span class="c-item-btn" @click="receive(item)">领取</span>
                 </a>
               </div>
             </div>
@@ -38,11 +39,36 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: "coupon",
+  data() {
+    return {
+      couponList: [],
+    };
+  },
+  created() {
+    this.getInit();
+  },
+  computed: {
+    ...mapGetters(["userInfo"]),
+  },
   methods: {
-    receive() {
-      this.$store.commit("ISTOLOGIN", true);
+    handleClick() {},
+    getInit() {
+      this.$api.getAllCoupon().then((res) => {
+        console.log(res);
+        this.couponList = res.data.data;
+      });
+    },
+    receive(item) {
+      if (this.userInfo.name) {
+        this.$api.mallCouponReceiveCoupon({ id: item.coupon_id }).then((res) => {
+          console.log(res);
+        });
+      } else {
+        this.$store.commit("ISTOLOGIN", true);
+      }
     },
   },
 };
@@ -70,10 +96,12 @@ export default {
       min-height: 500px;
       margin: 15px 40px;
       .couponList {
+        display: flex;
+        flex-wrap: wrap;
         .couponItem {
           color: #313336;
           position: relative;
-          width: 455px;
+          width: 430px;
           display: inline-block;
           font-size: 14px;
           margin: 20px 0 0 30px;
@@ -127,7 +155,7 @@ export default {
             .c-item-content-bg {
               background: #fff;
               left: 139px;
-              right: 31px;
+              right: 18px;
               bottom: 5px;
               top: 5px;
               content: "";
@@ -153,7 +181,7 @@ export default {
               width: 30px;
             }
             .c-item-content-bg:after {
-              background: url(https://p.ssl.qhimg.com/t015589f9392de3fbd5.png);
+              // background: url(https://p.ssl.qhimg.com/t015589f9392de3fbd5.png);
               height: 100%;
               top: 0;
               bottom: 5px;

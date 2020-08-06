@@ -12,4 +12,12 @@ module.exports = {
             chunkFilename: `js/[name].js?${Timestamp}`
         },
     },
+    devServer: {
+        host: '0.0.0.0',
+        historyApiFallback: {
+            rewrites: [
+                { from: /^.*/, to: '/dist/' }
+            ]
+        }
+    }
 }

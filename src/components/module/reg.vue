@@ -18,59 +18,24 @@
           v-text="$t('reg.r2')"
         >郵箱註冊</div>
       </div>
-      <div class="flexC form" v-if="activeIndex == 0">
-        <div class="form_item form_item1">
+      <div class="flexC form">
+        <div v-if="activeIndex == 0" class="form_item form_item1">
           <div class="flexA form_btn1">
             <i class="iconfont icon-shoujihaoma"></i>
-            <div class="code">+86</div>
+            <div class="code">+{{form.column}}</div>
           </div>
           <div class="input">
-            <input type="text" :placeholder="$t('reg.r3')" />
+            <input type="text" v-model="form.m_name" :placeholder="$t('reg.r3')" />
           </div>
         </div>
-        <div class="form_item form_item1">
-          <div class="input">
-            <i class="iconfont icon-yanzhengma1"></i>
-            <input type="text" :placeholder="$t('reg.r4')" />
-          </div>
-          <div class="flexC form_btn" @click="getPicCode">
-            <img :src="imgurl" :alt="$t('reg.r14')" />
-          </div>
-        </div>
-        <div class="form_item form_item1">
-          <div class="input">
-            <i class="iconfont icon-duanxinyanzhengma"></i>
-            <input type="text" :placeholder="$t('reg.r5')" />
-          </div>
-          <div class="flexC form_btn" v-text="$t('reg.r6')">獲取驗證碼</div>
-        </div>
-        <div class="form_item">
-          <i class="iconfont icon-mima"></i>
-          <input type="text" :placeholder="$t('reg.r7')" />
-        </div>
-        <div class="form_item">
-          <i class="iconfont icon-mima"></i>
-          <input type="text" :placeholder="$t('reg.r8')" />
-        </div>
-        <div class="form_item">
-          <i class="iconfont icon-yaoqingma"></i>
-          <input type="text" :placeholder="$t('reg.r9')" />
-        </div>
-        <div class="form_item btn" v-text="$t('reg.r10')">註冊</div>
-        <div class="felxE login" @click="login">
-          <span v-text="$t('reg.r11')">已有賬號,</span>
-          <span class="color" v-text="$t('reg.r12')">直接登錄</span>
-        </div>
-      </div>
-      <div class="flexC form" v-if="activeIndex == 1">
-        <div class="form_item form_item1">
+        <div v-else class="form_item form_item1">
           <i class="iconfont icon-youxiang"></i>
-          <input type="text" :placeholder="$t('reg.r13')" />
+          <input type="text" v-model="form.m_name" :placeholder="$t('reg.r13')" />
         </div>
         <div class="form_item form_item1">
           <div class="input">
             <i class="iconfont icon-yanzhengma1"></i>
-            <input type="text" :placeholder="$t('reg.r4')" />
+            <input type="text" v-model="form.img_code" :placeholder="$t('reg.r4')" />
           </div>
           <div class="flexC form_btn" @click="getPicCode">
             <img :src="imgurl" :alt="$t('reg.r14')" />
@@ -79,23 +44,26 @@
         <div class="form_item form_item1">
           <div class="input">
             <i class="iconfont icon-duanxinyanzhengma"></i>
-            <input type="text" :placeholder="$t('reg.r5')" />
+            <input type="text" v-model="form.sms_code" :placeholder="$t('reg.r5')" />
           </div>
-          <div class="flexC form_btn" v-text="$t('reg.r6')">獲取驗證碼</div>
+          <div class="flexC form_btn">
+            <span v-show="show" @click="getCode" v-text="$t('reg.r6')">獲取驗證碼</span>
+            <span v-show="!show" class="count">{{count}} s</span>
+          </div>
         </div>
         <div class="form_item">
           <i class="iconfont icon-mima"></i>
-          <input type="text" :placeholder="$t('reg.r7')" />
+          <input type="password" v-model="form.m_pwd" :placeholder="$t('reg.r7')" />
         </div>
         <div class="form_item">
           <i class="iconfont icon-mima"></i>
-          <input type="text" :placeholder="$t('reg.r8')" />
+          <input type="password" v-model="form.m_pwd2" :placeholder="$t('reg.r8')" />
         </div>
         <div class="form_item">
           <i class="iconfont icon-yaoqingma"></i>
-          <input type="text" :placeholder="$t('reg.r9')" />
+          <input type="text" v-model="form.introduce_m_id" :placeholder="$t('reg.r9')" />
         </div>
-        <div class="form_item btn" v-text="$t('reg.r10')">註冊</div>
+        <div class="form_item btn" v-text="$t('reg.r10')" @click="phoneReg">註冊</div>
         <div class="felxE login" @click="login">
           <span v-text="$t('reg.r11')">已有賬號,</span>
           <span class="color" v-text="$t('reg.r12')">直接登錄</span>
@@ -111,12 +79,19 @@ export default {
   data() {
     return {
       imgurl: "",
+      kaptcha_token: "",
       activeIndex: 0,
+      show: true,
+      count: "",
+      timer: null,
       form: {
-        phone: "",
-        picCode: "",
-        smsCode: "",
-        password: "",
+        column: "86",
+        introduce_m_id: "",
+        img_code: "",
+        m_name: "",
+        sms_code: "",
+        m_pwd: "",
+        m_pwd2: "",
       },
     };
   },
@@ -124,16 +99,208 @@ export default {
     this.getPicCode();
   },
   methods: {
+    getCode() {
+      if (this.activeIndex == 0 && !this.form.m_name) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: "请输入手机号码",
+          });
+        }
+      } else if (
+        this.activeIndex == 0 &&
+        !/^1(3|4|5|6|7|8|9)\d{9}$/.test(this.form.m_name)
+      ) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: "输入的手机号格式有误",
+          });
+        }
+      } else if (this.activeIndex == 1 && !this.form.m_name) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: "请输入邮箱地址",
+          });
+        }
+      } else if (
+        this.activeIndex == 1 &&
+        !(this.form.m_name.indexOf("@") > -1)
+      ) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: "输入的邮箱格式有误",
+          });
+        }
+      } else if (!this.form.img_code) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: "请输入图片验证码",
+          });
+        }
+      } else {
+        console.log(123);
+        const that = this;
+        this.$api
+          .getPhoneCode({
+            name: this.form.column + "_" + this.form.m_name,
+            kaptcha_token: this.kaptcha_token,
+            img_code: this.form.img_code,
+          })
+          .then((res) => {
+            that.show = false;
+            that.startDown();
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+            if (
+              document.getElementsByClassName("el-notification").length === 0
+            ) {
+              this.$notify.info({
+                title: this.$t("login.l7"),
+                message: err.data.msg,
+              });
+            }
+          });
+      }
+    },
+    startDown() {
+      const TIME_COUNT = 60;
+      if (!this.timer) {
+        this.count = TIME_COUNT;
+        this.show = false;
+        this.timer = setInterval(() => {
+          if (this.count > 0 && this.count <= TIME_COUNT) {
+            this.count--;
+          } else {
+            this.show = true;
+            clearInterval(this.timer);
+            this.timer = null;
+          }
+        }, 1000);
+      }
+    },
+    phoneReg() {
+      if (this.activeIndex == 0 && !this.form.m_name) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: "请输入手机号码",
+          });
+        }
+      } else if (
+        this.activeIndex == 0 &&
+        !/^1(3|4|5|6|7|8|9)\d{9}$/.test(this.form.m_name)
+      ) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: "输入的手机号格式有误",
+          });
+        }
+      } else if (this.activeIndex == 1 && !this.form.m_name) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: "请输入邮箱地址",
+          });
+        }
+      } else if (
+        this.activeIndex == 1 &&
+        !(this.form.m_name.indexOf("@") > -1)
+      ) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: "输入的邮箱格式有误",
+          });
+        }
+      } else if (!this.form.img_code) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: "请输入图片验证码",
+          });
+        }
+      } else if (!this.form.sms_code) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: "请输入短信验证码",
+          });
+        }
+      } else if (!this.form.m_pwd) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: "请设置登录密码",
+          });
+        }
+      } else if (!this.form.m_pwd2) {
+        if (document.getElementsByClassName("el-notification").length === 0) {
+          this.$notify.info({
+            title: this.$t("login.l7"),
+            message: "请确认登录密码",
+          });
+        }
+      } else {
+        this.$api
+          .memberRegdo({
+            introduce_m_id: this.form.introduce_m_id,
+            m_name: this.form.column + "_" + this.form.m_name,
+            m_pwd: this.form.m_pwd,
+            m_type: 0,
+            sms_code: this.form.sms_code,
+          })
+          .then((res) => {
+            if (res.data.status == 0) {
+              if (
+                document.getElementsByClassName("el-notification").length === 0
+              ) {
+                this.$notify.info({
+                  title: this.$t("login.l7"),
+                  message: "注册成功",
+                });
+              }
+              this.$store.commit("ISTOLOGIN", true);
+            }
+          })
+          .catch((err) => {
+            if (
+              document.getElementsByClassName("el-notification").length === 0
+            ) {
+              this.$notify.info({
+                title: this.$t("login.l7"),
+                message: err.data.msg,
+              });
+            }
+          });
+      }
+    },
     // 获取图形验证码
     getPicCode() {
       this.$api.picCode().then((res) => {
         console.log(res);
-        this.imgurl = res.img;
+        this.imgurl = res.data.img;
+        this.kaptcha_token = res.data.kaptcha_token;
       });
     },
     // 切换邮箱或手机号注册
     changeType(index) {
       this.activeIndex = index;
+      this.form = {
+        column: "86",
+        introduce_m_id: "",
+        img_code: "",
+        m_name: "",
+        sms_code: "",
+        m_pwd: "",
+        m_pwd2: "",
+      };
       this.getPicCode();
     },
     close() {

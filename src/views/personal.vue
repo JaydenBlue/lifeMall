@@ -29,6 +29,8 @@ export default {
   data() {
     return {};
   },
+  mounted() {
+  },
   computed: {
     gpsItems() {
       return [
@@ -70,7 +72,8 @@ export default {
       ];
     },
   },
-  mounted() {},
+  methods:{
+  }
 };
 </script>
 

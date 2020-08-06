@@ -5,7 +5,9 @@
 </template>
 
 <script>
-import store from "./store.js";
+import store from "@/store/store.js";
+
+import Cookie from "js-cookie";
 
 export default {
   name: "App",
@@ -15,13 +17,14 @@ export default {
   },
   computed: {},
   created() {
-    document.body.removeChild(document.getElementById("Loading"));
+    console.log(store)
+    // document.body.removeChild(document.getElementById("Loading"));
     //读取cookie
-    // let auth = this.$cookies.get("auth");
-    // if (auth) {
-    //   this.$store.commit("isLoginChange", true);
-    //   this.$store.commit("tokenChange", auth);
-    // }
+    let auth = Cookie.get("auth");
+    if (auth) {
+      this.$store.commit("isLoginChange", true);
+      this.$store.commit("tokenChange", auth);
+    }
     // let lang_type = this.$cookies.get("lang_type");
     // if (lang_type) {
     //   this.$i18n.locale = lang_type + "";

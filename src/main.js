@@ -2,13 +2,15 @@ import Vue from 'vue'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import App from './App.vue'
-import router from './router'
-import store from './store'
+import router from '@/router/'
+import store from './store/store.js'
+import api from '@/api/api.js'
 import 'vant/lib/index.css';
 import VueCookies from 'vue-cookies'
-import api from '@/api/api.js'
 import VueI18n from 'vue-i18n'
 import { filters } from '@/utils/filter'
+import vRegion from 'v-region'
+Vue.use(vRegion, {})
 
 Vue.use(VueCookies).use(ElementUI)
 Vue.config.productionTip = false
@@ -28,6 +30,8 @@ const i18n = new VueI18n({
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 });
+
+console.log(store)
 
 
 new Vue({

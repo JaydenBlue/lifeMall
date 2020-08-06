@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import Cookie from 'js-cookie'
 export default {
   name: "login",
   data() {
@@ -68,6 +69,9 @@ export default {
               message: "登录成功",
             });
           }
+          Cookie.set('auth',res.data.data);
+          this.$store.commit('isLoginChange',true);
+          this.$store.commit('tokenChange',res.data.data);
           this.$store.commit("LOGININFO", res);
           this.$store.commit("ISTOLOGIN", false);
         });

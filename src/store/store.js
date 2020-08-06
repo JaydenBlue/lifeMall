@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import api from './api/api.js'
+import api from '@/api/api.js'
 
 Vue.use(Vuex)
 
@@ -44,15 +44,16 @@ export default new Vuex.Store({
       state.isLogin = bool
     },
     LOGININFO(state, obj) {
-      api.getUserInfo().then(res => {
-        console.log(res)
-      })
       state.loginInfo = obj
     },
     USERINFO(state, obj) {
       state.userInfo = obj
     },
     tokenChange(state, token) {
+      api.getUserInfo({}).then(res => {
+        console.log(res)
+        state.userInfo = res.data.data
+      })
       state.token = token
     },
     tgBaseUrlChange(state, url) {
