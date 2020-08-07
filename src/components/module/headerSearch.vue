@@ -9,15 +9,15 @@
       </div>
       <div class="right">
         <div class="serachBox">
-          <input class="serach" v-model="searchName" type="text" placeholder="iPhone 11 Pro Max" />
+          <input class="serach" v-model="searchName" @input="jumpClass(searchName)" type="text" placeholder="iPhone 11 Pro Max" />
           <img class="serchImg" src="@/assets/img/serach.png" alt />
           <div class="searchSuggest">
             <span class="lis" v-text="$t('home.h2')" @click="jumpClass($t('home.h2'))">笔记本</span>
-            <span class="lis" v-text="$t('home.h3')">摄像机</span>
-            <span class="lis" v-text="$t('home.h4')">路由器</span>
-            <span class="lis" v-text="$t('home.h5')">记录仪</span>
-            <span class="lis" v-text="$t('home.h6')">手机</span>
-            <span class="lis" v-text="$t('home.h7')">扫地机</span>
+            <span class="lis" v-text="$t('home.h3')" @click="jumpClass($t('home.h3'))">摄像机</span>
+            <span class="lis" v-text="$t('home.h4')" @click="jumpClass($t('home.h4'))">路由器</span>
+            <span class="lis" v-text="$t('home.h5')" @click="jumpClass($t('home.h5'))">记录仪</span>
+            <span class="lis" v-text="$t('home.h6')" @click="jumpClass($t('home.h6'))">手机</span>
+            <span class="lis" v-text="$t('home.h7')" @click="jumpClass($t('home.h7'))">扫地机</span>
           </div>
         </div>
       </div>

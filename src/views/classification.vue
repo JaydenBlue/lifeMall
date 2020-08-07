@@ -11,13 +11,13 @@
       </div>
     </div>
     <div class="filter-box">
-      <div class="filter js-cates">
+      <div class="filter js-cates" v-if="name == '全部'">
         <div class="hint">分类:</div>
         <div class="option_box unspread">
           <a
             href="javascript:void(0)"
             @click="changeType(item, index)"
-            :class="activeIndex == index?'acitves':''"
+            :class="name == '全部' && activeIndex == index?'acitves':''"
             v-for="(item, index) in typeList"
             :key="index"
           >{{item.name}}</a>
@@ -57,7 +57,7 @@
                     </span>
                   </a>
                 </dd>
-                <dd class="addbtns" @click="addCart">
+                <dd class="addbtns" @click="addCart(item)">
                   <a href="javascript:void(0)" class="add-cart">加入购物车</a>
                 </dd>
               </dl>
@@ -129,9 +129,14 @@ export default {
       this.filterForm.type = item.id;
       this.getShops();
     },
-    addCart() {
+    addCart(item) {
       console.log(this.userInfo);
       if (this.userInfo) {
+        this.$api.addCartO({
+          goods_id: item.id,
+          goods_sort: item.sorts.split(",")[0],
+          num: 1,
+        })
         if (document.getElementsByClassName("el-notification").length === 0) {
           this.$notify.info({
             title: this.$t("login.l7"),

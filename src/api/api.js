@@ -71,6 +71,9 @@ api.delAdress = p => Api(`mall/receivingAddress/delete/mallReceivingAddress/${p.
 // 新增收货地址
 api.addAdress = p => Api(`mall/receivingAddress/add/mallReceivingAddress`, 'post', p);
 
+// 添加购物车
+api.addCartO = p => Api(`mall/shopCart/add/mallShopCartGoods`, 'post', p);
+
 
 
 export default api
