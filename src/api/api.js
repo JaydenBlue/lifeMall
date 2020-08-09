@@ -74,6 +74,17 @@ api.addAdress = p => Api(`mall/receivingAddress/add/mallReceivingAddress`, 'post
 // 添加购物车
 api.addCartO = p => Api(`mall/shopCart/add/mallShopCartGoods`, 'post', p);
 
+// 查看购物车列表
+api.getCartO = p => Api(`mall/shopCart/get/mallShopCartGoodsPage`, 'post', p);
+
+// 删除购物车商品
+api.delCartO = p => Api(`mall/shopCart/delete/mallShopCartGoods`, 'post', p);
+
+// 更新购物车商品
+api.updateCartO = p => Api(`/mall/shopCart/update/mallShopCartGoodsNum`, 'post', p);
+
+
+
 
 
 export default api

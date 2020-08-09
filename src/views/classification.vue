@@ -120,8 +120,8 @@ export default {
     },
     searchAll() {
       this.name = "全部";
-      this.filterForm.name = ''
-      this.getShops()
+      this.filterForm.name = "";
+      this.getShops();
     },
     // 切换分类
     changeType(item, index) {
@@ -132,17 +132,23 @@ export default {
     addCart(item) {
       console.log(this.userInfo);
       if (this.userInfo) {
-        this.$api.addCartO({
-          goods_id: item.id,
-          goods_sort: item.sorts.split(",")[0],
-          num: 1,
-        })
-        if (document.getElementsByClassName("el-notification").length === 0) {
-          this.$notify.info({
-            title: this.$t("login.l7"),
-            message: "添加成功",
+        this.$api
+          .addCartO({
+            goods_id: item.id,
+            goods_sort: item.sorts.split(",")[0],
+            num: 1,
+          })
+          .then((res) => {
+            console.log(res);
+            if (
+              document.getElementsByClassName("el-notification").length === 0
+            ) {
+              this.$notify.info({
+                title: this.$t("login.l7"),
+                message: "添加成功",
+              });
+            }
           });
-        }
       } else {
         this.$store.commit("ISTOLOGIN", true);
       }

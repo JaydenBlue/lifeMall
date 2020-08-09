@@ -5,44 +5,47 @@
         <el-table
           ref="multipleTable"
           size="small"
-          :data="tableData"
+          :data="cartList"
           tooltip-effect="dark"
           style="width: 100%"
-          @selection-change="handleSelectionChange"
         >
+          <!-- @selection-change="handleSelectionChange" -->
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column align="center" label="商品" width="270">
             <template slot-scope="scope">
               <div class="flexA shopMsg">
                 <div class="img">
-                  <img src="https://p4.ssl.qhimg.com/t01471e11479d3fd6b0.png" alt />
+                  <img :src="scope.row.goods_url" alt />
                 </div>
-                <div class="name">【新品】360 智能摄像机云台乐享版标准款AP5C</div>
+                <div class="name">{{scope.row.goods_name}}</div>
               </div>
             </template>
           </el-table-column>
           <el-table-column align="center" prop="name" label="属性" width="120">
             <template slot-scope="scope">
-              <div @click="handleEdit(scope.$index, scope.row)">分类:AP5C</div>
+              <div @click="handleEdit(scope.$index, scope.row)">分类:{{scope.row.goods_sort}}</div>
             </template>
           </el-table-column>
           <el-table-column align="center" prop="address" label="单价" show-overflow-tooltip>
             <template slot-scope="scope">
-              <div @click="handleEdit(scope.$index, scope.row)">¥129.00</div>
+              <div @click="handleEdit(scope.$index, scope.row)">¥{{scope.row.price}}</div>
             </template>
           </el-table-column>
           <el-table-column align="center" label="数量">
             <template slot-scope="scope">
               <div class="flexA opearte">
-                <a @click="handleEdit(scope.$index, scope.row)" href="javascript:void(0)">-</a>
-                <input type="text" value="1" />
-                <a href="javascript:void(0)">+</a>
+                <a @click="reduce(scope.$index, scope.row)" href="javascript:void(0)">-</a>
+                <input type="text" v-model="scope.row.num" />
+                <a href="javascript:void(0)" @click="add(scope.$index, scope.row)">+</a>
               </div>
             </template>
           </el-table-column>
           <el-table-column align="center" label="小计">
             <template slot-scope="scope">
-              <div class="total" @click="handleEdit(scope.$index, scope.row)">¥258.00</div>
+              <div
+                class="total"
+                @click="handleEdit(scope.$index, scope.row)"
+              >¥{{scope.row.num * scope.row.price}}</div>
             </template>
           </el-table-column>
           <el-table-column align="center" label="操作">
@@ -55,8 +58,10 @@
       <div class="status">
         <div class="flex settlment">
           <div class="flexA cart_lf">
-              <div class="allChoose"><el-checkbox v-model="checked">全选</el-checkbox></div>
-              <div class="delChoose">删除选中商品</div>
+            <div class="allChoose">
+              <el-checkbox v-model="checked">全选</el-checkbox>
+            </div>
+            <div class="delChoose">删除选中商品</div>
           </div>
           <div class="flexA cart_rg">
             <div class="totalWrap">
@@ -85,45 +90,66 @@ export default {
   name: "cart",
   data() {
     return {
-      tableData: [
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-08",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-06",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-07",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-      ],
+      cartList: [],
       multipleSelection: [],
+      pageNum: 1,
+      pageSize: 10,
+      checked: false,
     };
+  },
+  mounted() {
+    this.getInit();
+  },
+  methods: {
+    add(index, item) {
+      item.num = item.num + 1;
+      this.updateNum(item)
+    },
+    reduce(index, item) {
+      if (item.num > 1) {
+        item.num = item.num - 1;
+        this.updateNum(item)
+      }
+    },
+    updateNum(item){
+      console.log(item)
+      this.$api.updateCartO({
+        cart_detail_id:item.id,
+        cart_id:item.shop_cart_id,
+        num:item.num
+      }).then(res=> {
+        console.log(res)
+        this.getInit()
+      })
+    },
+    handleDelete(index, item) {
+      this.$api
+        .delCartO({
+          list: [
+            {
+              cart_detail_ids: item.id,
+              cart_id: item.shop_cart_id,
+              is_all: 0,
+            },
+          ],
+        })
+        .then((res) => {
+          console.log(res);
+          this.getInit()
+        });
+    },
+    getInit() {
+      this.$api
+        .getCartO({
+          pageNum: this.pageNum,
+          pageSize: this.pageSize,
+        })
+        .then((res) => {
+          console.log(res);
+          this.cartList = res.data.data.list[0].list;
+        })
+        .catch((err) => {});
+    },
   },
 };
 </script>
@@ -188,6 +214,10 @@ export default {
           height: 68px;
           width: 68px;
           margin-right: 10px;
+          img {
+            width: 100%;
+            display: block;
+          }
         }
         .name {
           color: #333;

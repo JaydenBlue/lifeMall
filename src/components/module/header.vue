@@ -65,7 +65,7 @@
             </div>
           </div>
           <div class="tls hiddens">
-            <i class="el-icon-goods"></i>
+            <i class="el-icon-goods" @click="jumpCart"></i>
             <div class="hover shopcat">
               <div class="noshop" v-text="$t('header.h8')">您的购物车还没有商品，赶紧去选购吧！</div>
             </div>
@@ -107,6 +107,9 @@ export default {
     this.userInfoMsg = this.userInfo;
   },
   methods: {
+    jumpCart() {
+      this.$router.push('./cart')
+    },
     loginOut() {
       this.$api
         .memberLogout()

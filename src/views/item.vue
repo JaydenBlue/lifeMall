@@ -34,9 +34,9 @@
           <div class="subItem">
             <div class="label">数量</div>
             <div class="main1">
-              <a href="javascript:void(0)">-</a>
-              <input type="text" value="1" />
-              <a href="javascript:void(0)">+</a>
+              <a href="javascript:void(0)" @click="reduce">-</a>
+              <input type="text" v-model="nums" />
+              <a href="javascript:void(0)" @click="add">+</a>
             </div>
           </div>
           <div class="subItem">
@@ -77,6 +77,7 @@ export default {
       offsetTop: 0,
       activeIndex: 0,
       activeIndex1: 0,
+      nums: 1,
       tabs: ["产品详情", "评论"],
       goodId: "",
       shopMsg: {},
@@ -108,16 +109,34 @@ export default {
     changeSpec(name, index) {
       this.activeIndex1 = index;
     },
+    add() {
+      this.nums = this.nums + 1;
+    },
+    reduce() {
+      if (this.nums <= 1) {
+      } else {
+        this.nums = this.nums - 1;
+      }
+    },
 
     addCart() {
-      console.log(this.userInfo);
       if (this.userInfo) {
-        if (document.getElementsByClassName("el-notification").length === 0) {
-          this.$notify.info({
-            title: this.$t("login.l7"),
-            message: "添加成功",
+        this.$api
+          .addCartO({
+            goods_id: this.goodId,
+            goods_sort: this.shopMsg.sorts.split(",")[this.activeIndex1],
+            num: this.nums,
+          })
+          .then((res) => {
+            if (
+              document.getElementsByClassName("el-notification").length === 0
+            ) {
+              this.$notify.info({
+                title: this.$t("login.l7"),
+                message: "添加成功",
+              });
+            }
           });
-        }
       } else {
         this.$store.commit("ISTOLOGIN", true);
       }
